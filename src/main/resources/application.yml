@@ -15,7 +15,33 @@ spring:
           uri: lb://userservice
           predicates:
             - Path=/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                  name: userservice
+                  fallbackuri: forward:/userservicefallback
         - id: contectservice
           uri: lb://contectservice
           predicates:
             - Path=/contact/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                  name: contectservice
+                  fallbackuri: forward:/contactservicefallback
+
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillisecounds: 5000
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+
